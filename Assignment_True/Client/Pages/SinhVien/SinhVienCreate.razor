@@ -1,0 +1,102 @@
+﻿@page "/SinhVienCreate"
+@using Assignment_True.Client.Interfaces
+@using Assignment_True.Client.Services
+@using Assignment_True.Shared.Models
+@inject HttpClient Http
+@inject ITruongService TruongService
+@inject INganhService NganhService;
+@inject ILopService LopService;
+@inject ISinhVienService SinhVienService
+@inject NavigationManager Navigation
+
+<h3>Tạo mới</h3>
+
+<EditForm Model="_sinhVien" OnValidSubmit="submitTask">
+    <div class="mb-3">
+        <label class="form-label" for="">Mã sinh viên</label>
+        <InputText class="form-control" @bind-Value="_sinhVien.MaSv" placeholder="Nhập tên sinh viên"></InputText>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="">Tên sinh viên</label>
+        <InputText class="form-control" @bind-Value="_sinhVien.TenSv" placeholder="Nhập tên sinh viên"></InputText>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="">Ngày sinh</label>
+        <InputDate class="form-control" @bind-Value="_sinhVien.NgaySinh" placeholder="Nhập ngày sinh"></InputDate>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="">Giới tính</label>
+        <InputSelect TValue="bool" @bind-Value="_sinhVien.GioiTinh">
+            <option>Chọn giới tính</option>
+            <option value="true">Nam</option>
+            <option value="false">Nữ</option>
+        </InputSelect>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="">Trường</label>
+        <InputSelect TValue="string" @bind-Value="_sinhVien.MaTruong">
+            <option>Chọn trường</option>
+            @if (_truongs != null)
+            {
+                @foreach (var item in _truongs)
+                {
+                    <option value="@item.MaTruong">@item.TenTruong</option>
+                }
+            }
+        </InputSelect>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="">Ngành</label>
+        <InputSelect TValue="string" @bind-Value="_sinhVien.MaNganh">
+            <option>Chọn ngành</option>
+            @if (_nganhs != null)
+            {
+                @foreach (var item in _nganhs)
+                {
+                    <option value="@item.MaNganh">@item.TenNganh</option>
+                }
+            }
+        </InputSelect>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="">Lớp</label>
+        <InputSelect TValue="string" @bind-Value="_sinhVien.MaLop">
+            <option value="">Chọn lớp</option>
+            @if (_lops != null)
+            {
+                @foreach (var item in _lops)
+                {
+                    <option value="@item.MaLop">@item.TenLop</option>
+                }
+            }
+        </InputSelect>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+
+@code {
+
+    SinhVien _sinhVien = new SinhVien();
+    List<Truong> _truongs;
+    List<Nganh> _nganhs;
+    List<Lop> _lops;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _truongs = await TruongService.GetList();
+        _nganhs = await NganhService.GetList();
+        _lops = await LopService.GetList();
+    }
+
+    private async Task submitTask(EditContext context)
+    {
+        var result = await SinhVienService.Create(_sinhVien);
+        if (result)
+        {
+            Navigation.NavigateTo("/SinhVienIndex");
+
+        }
+
+    }
+}

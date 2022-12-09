@@ -1,0 +1,59 @@
+﻿@page "/LopIndex"
+@using Assignment_True.Shared.Models
+@using Assignment_True.Client.Services
+@using Assignment_True.Client.Interfaces
+@inject HttpClient Http
+@inject IMonHocService _monHocService
+<PageTitle>Lớp</PageTitle>
+
+<h1>Lớp</h1>
+
+<div class="col pt-4">
+    <a href="/LopCreate" class="btn btn-success">Tạo</a>
+</div>
+
+@if (_lops == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Mã lớp</th>
+                <th>Tên lớp</th>
+                <th>Môn học</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var x in _lops)
+            {
+                <tr>
+                    <td>@x.MaLop</td>
+                    <td>@x.TenLop</td>
+                    <td>@_monHocs.Where(c=>c.MaMonHoc == x.MaMonHoc).Select(c=>c.TenMonHoc).FirstOrDefault()</td>
+                    <td>
+                        <a href="/LopUpdate/@x.MaLop" class="btn btn-primary">Cập nhật</a>
+                         <a href="/LopDelete/@x.MaLop" class="btn btn-danger">Xoá</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+@code {
+
+    [Inject] private ILopService _LopService { get; set; }
+    private List<Lop> _lops;
+    List<MonHoc> _monHocs;
+    protected override async Task OnInitializedAsync()
+    {
+        _lops = await _LopService.GetList();
+        _monHocs = await _monHocService.GetList();
+    }
+
+}

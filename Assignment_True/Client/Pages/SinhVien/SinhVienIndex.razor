@@ -1,0 +1,92 @@
+﻿@page "/SinhVienIndex"
+@using Assignment_True.Client.Interfaces
+@using Assignment_True.Client.Services
+@using Assignment_True.Shared.Models
+@inject HttpClient Http
+@inject HttpClient Http
+@inject ITruongService TruongApi;
+@inject INganhService NganhApi;
+@inject ILopService LopApi;
+<PageTitle>Sinh viên</PageTitle>
+
+<h1>Sinh viên</h1>
+
+<div class="col pt-4">
+    <a href="/SinhVienCreate" class="btn btn-success">Tạo</a>
+</div>
+
+@if (_sinhViens == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Mã sinh viên</th>
+                <th>Tên sinh viên</th>
+                <th>Ngày sinh</th>
+                <th>Giới tính</th>
+                <th>Trường</th>
+                <th>Ngành</th>
+                <th>Lớp</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var x in _sinhViens)
+            {
+                <tr>
+                    <td>@x.MaSv</td>
+                    <td>@x.TenSv</td>
+                    <td>@x.NgaySinh</td>
+                    <td>@(x.GioiTinh ? "Nam" : "Nữ")</td>
+                    @if(x.MaTruong != null){ 
+                        <td> @_truongs.Where(c => c.MaTruong == x.MaTruong).Select(c => c.TenTruong).FirstOrDefault(); </td>
+                    } else
+                    {
+                        <td>Chưa đăng ký</td>
+                    }
+                    
+                    @if(x.MaNganh != null){ 
+                        <td> @_nganhs.Where(c => c.MaNganh == x.MaNganh).Select(c => c.TenNganh).FirstOrDefault(); </td>
+                    } else
+                    {
+                        <td>Chưa đăng ký</td>
+                    }
+                    
+                    @if(x.MaLop != null){ 
+                        <td> @_lops.Where(c => c.MaLop == x.MaLop).Select(c => c.TenLop).FirstOrDefault(); </td>
+                    } else
+                    {
+                        <td>Chưa đăng ký</td>
+                    }
+                    
+                    <td>
+                        <a href="/DiemIndex/@x.MaSv" class="btn btn-danger">Xem điểm</a>
+                        <a href="/SinhVienUpdate/@x.MaSv" class="btn btn-primary">Cập nhật</a>
+                         <a href="/SinhVienDelete/@x.MaSv" class="btn btn-danger">Xoá</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+@code {
+
+    [Inject] private ISinhVienService _SinhVienApi { get; set; }
+    private List<SinhVien> _sinhViens;
+    List<Truong> _truongs;
+    List<Nganh> _nganhs;
+    List<Lop> _lops;
+    protected override async Task OnInitializedAsync()
+    {
+        _sinhViens = await _SinhVienApi.GetList();
+        _truongs = await TruongApi.GetList();
+        _nganhs = await NganhApi.GetList();
+        _lops = await LopApi.GetList();
+    }
+
+}

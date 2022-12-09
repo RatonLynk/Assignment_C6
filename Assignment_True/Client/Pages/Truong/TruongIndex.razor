@@ -1,0 +1,58 @@
+﻿@page "/TruongIndex"
+@using Assignment_True.Client.Interfaces
+@using Assignment_True.Client.Services
+@using Assignment_True.Shared.Models
+@inject HttpClient Http
+
+<PageTitle>Trường</PageTitle>
+
+<h1>Trường</h1>
+
+<div class="col pt-4">
+    <a href="/truongCreate" class="btn btn-success">Tạo</a>
+</div>
+
+@if (_truongs == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Mã trường</th>
+                <th>Tên trường</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Truong x in _truongs)
+            @if (x.Status)
+                {
+                    {
+                        <tr>
+                            <td>@x.MaTruong</td>
+                            <td>@x.TenTruong</td>
+                            <td>
+                                <a href="/truongUpdate/@x.MaTruong" class="btn btn-primary">Cập nhật</a>
+                                 <a href="/truongDelete/@x.MaTruong" class="btn btn-danger">Xoá</a>
+                            </td>
+                        </tr>
+                    }
+                }
+        </tbody>
+    </table>
+}
+
+
+@code {
+
+    [Inject] private ITruongService _truongApi { get; set; }
+    private List<Truong> _truongs;
+    protected override async Task OnInitializedAsync()
+    {
+        _truongs = await _truongApi.GetList();
+    }
+
+}

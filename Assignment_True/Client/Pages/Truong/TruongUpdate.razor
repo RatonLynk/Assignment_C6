@@ -1,0 +1,39 @@
+﻿@page "/truongUpdate/{MaTruong}"
+@using Assignment_True.Client.Interfaces
+@using Assignment_True.Client.Services
+@using Assignment_True.Shared.Models
+@inject NavigationManager Navigation
+
+<h3>Sửa @_truong.MaTruong</h3>
+
+<EditForm Model="_truong" OnValidSubmit="submitTask">
+    <div class="mb-3">
+        <label class="form-label" for="">Tên trường</label>
+        <InputText class="form-control" @bind-Value="_truong.TenTruong" placeholder="Nhập tên trường"></InputText>
+    </div>
+
+    
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+
+@code {
+    [Parameter] 
+    public string MaTruong { get; set; }
+    Truong _truong = new Truong();
+    [Inject] private ITruongService _truongApi { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        var info = await _truongApi.GetById(MaTruong);
+        _truong.MaTruong = info.MaTruong;
+        _truong.TenTruong = info.TenTruong;
+    }
+    private async Task submitTask(EditContext context)
+    {
+        var result = await _truongApi.Update(MaTruong,_truong);
+        if (result)
+        {
+            Navigation.NavigateTo("/TruongIndex");
+        }
+
+    }
+}

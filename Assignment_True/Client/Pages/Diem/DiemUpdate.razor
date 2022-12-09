@@ -1,0 +1,51 @@
+﻿@page "/DiemUpdate/{MaSv}/{MaMonHoc}"
+@using Assignment_True.Shared.Models
+@using Assignment_True.Client.Services
+@using Assignment_True.Client.Interfaces
+@inject IDiemService _diemService
+@inject ISinhVienService _sinhVienService
+@inject IMonHocService _monHocService
+@inject NavigationManager Navigation
+
+<h3>Sửa điểm của @_sinhVien.TenSv môn @_monHoc.TenMonHoc</h3>
+
+<EditForm Model="_diem" OnValidSubmit="submitTask">
+    <div class="mb-3">
+        <label class="form-label" for="">Điểm doc</label>
+        <InputNumber TValue="double" class="form-control" @bind-Value="_diem.DiemDocument" placeholder="Nhập điểm doc"></InputNumber>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="">Điểm presentation</label>
+        <InputNumber TValue="double" class="form-control"  @bind-Value="_diem.DiemPresentation" placeholder="Nhập điểm presentation"></InputNumber>
+    </div>
+
+    
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+
+@code {
+    [Parameter] 
+    public string MaSv { get; set; }
+    public string MaMonHoc { get; set; }
+    Diem _diem = new Diem();
+    MonHoc _monHoc = new MonHoc();
+    SinhVien _sinhVien = new SinhVien();
+    protected override async Task OnInitializedAsync()
+    {
+        var info = await _diemService.GetById(MaSv,MaMonHoc);
+        _sinhVien = await _sinhVienService.GetById(MaSv);
+        _monHoc = await _monHocService.GetById(MaMonHoc);
+        _diem.DiemDocument = info.DiemDocument;
+        _diem.DiemPresentation = info.DiemPresentation;
+
+    }
+    private async Task submitTask(EditContext context)
+    {
+        var result = await _diemService.Update(MaSv,MaMonHoc,_diem);
+        if (result)
+        {
+            Navigation.NavigateTo($"/DiemIndex/{MaSv}");
+        }
+
+    }
+}

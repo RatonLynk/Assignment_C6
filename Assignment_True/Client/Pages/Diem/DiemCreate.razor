@@ -1,0 +1,61 @@
+﻿@page "/DiemCreate/{MaSv}"
+@using Assignment_True.Shared.Models
+@using Assignment_True.Client.Services
+@using Assignment_True.Client.Interfaces
+@inject IDiemService _diemService
+@inject IMonHocService _monHocService
+@inject NavigationManager Navigation
+
+<h3>Tạo mới</h3>
+
+<EditForm Model="_diem" OnValidSubmit="submitTask">
+    <div class="mb-3">
+        <label class="form-label" for="">Môn học</label>
+        <InputSelect  class="form-control" type="button" @bind-Value="_diem.MaMonHoc">
+            <option value="">Chọn môn học</option>
+           @if (_monHocs is not null)
+           {
+               @foreach (var item in _monHocs)
+               {
+                   <option value="@item.MaMonHoc">@item.TenMonHoc</option>
+               }
+           }
+        </InputSelect>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="">Điểm doc</label>
+        <InputNumber TValue="double" class="form-control" @bind-Value="_diem.DiemDocument" placeholder="Nhập điểm doc"></InputNumber>
+        
+    </div>  
+    <div class="mb-3">
+        <label class="form-label" for="">Điểm presentation</label>
+        <InputNumber TValue="double" class="form-control"  @bind-Value="_diem.DiemPresentation" placeholder="Nhập điểm presentation"></InputNumber>
+    </div>
+
+    
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+
+@code {
+    [Parameter] public string MaSv { get; set; }
+    Diem _diem = new Diem();
+    private List<MonHoc> _monHocs;
+    protected override async Task OnInitializedAsync()
+    {
+        _monHocs = await _monHocService.GetList();
+    }
+
+    private async Task submitTask(EditContext context)
+    {
+        _diem.MaSv = MaSv;
+        Convert.ToDouble(_diem.DiemDocument);
+        Convert.ToDouble(_diem.DiemPresentation);
+        var result = await _diemService.Create(_diem);
+        if (result)
+        {
+            Navigation.NavigateTo($"/DiemIndex/{MaSv}");
+        }
+
+    }
+
+}

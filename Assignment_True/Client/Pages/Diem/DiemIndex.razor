@@ -1,0 +1,63 @@
+﻿@page "/DiemIndex/{MaSv}"
+@using Assignment_True.Shared.Models
+@using Assignment_True.Client.Services
+@using Assignment_True.Client.Interfaces
+@inject HttpClient Http
+@inject ISinhVienService _sinhVienService
+@inject IMonHocService _monHocService
+
+<PageTitle>Điểm</PageTitle>
+
+<h1>Điểm</h1>
+
+<div class="col pt-4">
+    <a href="/DiemCreate/@MaSv" class="btn btn-success">Tạo</a>
+</div>
+@if (diems == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Môn học</th>
+                <th>Điểm Doc</th>
+                <th>Điểm Presentation</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var x in diems)
+            {
+                <tr>
+                    <td>@_monHocs.Where(c=>c.MaMonHoc == x.MaMonHoc).Select(c=>c.TenMonHoc).FirstOrDefault()</td>
+                    <td>@x.DiemDocument</td>
+                    <td>@x.DiemPresentation</td>
+                    <td>
+                        <a href="/DiemUpdate/@x.MaSv/@x.MaMonHoc" class="btn btn-primary">Cập nhật</a>
+                        <a href="/DiemDelete/@x.MaSv/@x.MaMonHoc" class="btn btn-danger">Xoá</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+@code {
+    [Parameter] public string MaSv { get; set; }
+    [Inject] private IDiemService _diemService { get; set; }
+    private List<Diem> diems;
+    private List<SinhVien> _sinhViens;
+    private List<MonHoc> _monHocs;
+    protected override async Task OnInitializedAsync()
+    {
+        diems = await _diemService.GetList();
+        var _diems = diems.Where(c => c.MaSv == MaSv);
+        _sinhViens = await _sinhVienService.GetList();
+        _monHocs = await _monHocService.GetList();
+    }
+    
+}

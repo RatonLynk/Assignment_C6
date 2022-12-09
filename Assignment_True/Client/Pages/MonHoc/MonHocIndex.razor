@@ -1,0 +1,55 @@
+﻿@page "/MonHocIndex"
+@using Assignment_True.Shared.Models
+@using Assignment_True.Client.Services
+@using Assignment_True.Client.Interfaces
+@inject HttpClient Http
+
+<PageTitle>Môn học</PageTitle>
+
+<h1>Môn học</h1>
+
+<div class="col pt-4">
+    <a href="/MonHocCreate" class="btn btn-success">Tạo</a>
+</div>
+
+@if (_monHocs == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Mã môn học</th>
+                <th>Tên môn học</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var x in _monHocs)
+            {
+                <tr>
+                    <td>@x.MaMonHoc</td>
+                    <td>@x.TenMonHoc</td>
+                    <td>
+                        <a href="/MonHocUpdate/@x.MaMonHoc" class="btn btn-primary">Cập nhật</a>
+                         <a href="/MonHocDelete/@x.MaMonHoc" class="btn btn-danger">Xoá</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+@code {
+
+    [Inject] private IMonHocService _monHocService { get; set; }
+    private List<MonHoc> _monHocs;
+    protected override async Task OnInitializedAsync()
+    {
+        _monHocs = await _monHocService.GetList();
+    }
+
+}

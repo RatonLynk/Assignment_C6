@@ -1,0 +1,56 @@
+﻿@page "/NganhIndex"
+@using Assignment_True.Client.Interfaces
+@using Assignment_True.Client.Services
+@using Assignment_True.Shared.Models
+@inject HttpClient Http
+@inject HttpClient Http
+
+<PageTitle>Ngành</PageTitle>
+
+<h1>Ngành</h1>
+
+<div class="col pt-4">
+    <a href="/NganhCreate" class="btn btn-success">Tạo</a>
+</div>
+
+@if (_nganhs == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Mã ngành</th>
+                <th>Tên ngành</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var x in _nganhs)
+            {
+                <tr>
+                    <td>@x.MaNganh</td>
+                    <td>@x.TenNganh</td>
+                    <td>
+                        <a href="/NganhUpdate/@x.MaNganh" class="btn btn-primary">Cập nhật</a>
+                         <a href="/NganhDelete/@x.MaNganh" class="btn btn-danger">Xoá</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+@code {
+
+    [Inject] private INganhService _NganhApi { get; set; }
+    private List<Nganh> _nganhs;
+    protected override async Task OnInitializedAsync()
+    {
+        _nganhs = await _NganhApi.GetList();
+    }
+
+}

@@ -1,0 +1,37 @@
+﻿@page "/MonHocCreate"
+@using Assignment_True.Shared.Models
+@using Assignment_True.Client.Services
+@using Assignment_True.Client.Interfaces
+@inject IMonHocService _monHocService
+@inject NavigationManager Navigation
+
+<h3>Tạo mới</h3>
+
+<EditForm Model="_monHoc" OnValidSubmit="submitTask">
+    <div class="mb-3">
+        <label class="form-label" for="">Mã môn học</label>
+        <InputText  class="form-control" @bind-Value="_monHoc.MaMonHoc" placeholder="Nhập mã ngành"></InputText>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="">Tên môn học</label>
+        <InputText class="form-control" @bind-Value="_monHoc.TenMonHoc" placeholder="Nhập tên ngành"></InputText>
+    </div>
+
+    
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+
+@code {
+    
+    MonHoc _monHoc = new MonHoc();
+
+    private async Task submitTask(EditContext context)
+    {
+        var result = await _monHocService.Create(_monHoc);
+        if (result)
+        {
+            Navigation.NavigateTo("/MonHocIndex");
+        }
+
+    }
+}
